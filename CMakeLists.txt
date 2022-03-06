@@ -11,12 +11,14 @@ INCLUDE_DIRECTORIES(external/ASSIMP/include)
 INCLUDE_DIRECTORIES(external/GLFW/include)
 INCLUDE_DIRECTORIES(external/GLAD/include)
 INCLUDE_DIRECTORIES(external/GLM/)
+INCLUDE_DIRECTORIES(external/STB_IMAGE)
 
 add_library(my_lib STATIC  
     ./external/STB_IMAGE/stb_image.cpp    
 
     ./src/Wrappings/Shader/shader.cpp
     ./src/Wrappings/ShaderProgram/shader_program.cpp
+    ./src/Wrappings/Texture/texture.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET my_lib

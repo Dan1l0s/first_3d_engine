@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../Wrappings/Shader/shader.h"
 #include "../Wrappings/ShaderProgram/shader_program.h"
+#include "../Wrappings/Texture/texture.h"
 #include <windows.h>
 #include <cmath>
 #include <glad/glad.h>
@@ -12,13 +13,19 @@ const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
+Texture texture1;
+Texture texture2;
+
 float vertices[] = {
-    0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // bottom left
-    0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // top
+    // positions          // colors           // texture coords
+    0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+    -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
 };
 unsigned int indices[] = {
     0, 1, 2, // first triangle
+    0, 2, 3  // second triangle
 };
 
 int main()
@@ -73,15 +80,21 @@ int main()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // set vertex pointers
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     ShaderProgram program;
     program.InitProgram();
     program.AddShader(WORKING_DIR / "src" / "Shaders" / "vertex_shader.vs", GL_VERTEX_SHADER);
     program.AddShader(WORKING_DIR / "src" / "Shaders" / "fragment_shader.fs", GL_FRAGMENT_SHADER);
+
+    texture1.Init(WORKING_DIR / "res" / "wall.jpg");
+
+    texture2.Init(WORKING_DIR / "res" / "i.png");
 
     program.LinkProgram();
 
@@ -95,6 +108,12 @@ int main()
 
         program.Use();
 
+        texture1.BindToUnit(0);
+        texture2.BindToUnit(1);
+
+        program.SetInt("texture1", 0);
+        program.SetInt("texture2", 1);
+
         float timeValue = glfwGetTime();
         float greenValue = (std::sin(timeValue) / 2.0f) + 0.5f;
         float redValue = (std::sin(timeValue) / 3.0f) + 0.5f;
@@ -103,8 +122,10 @@ int main()
         program.SetVec4f("ourColor", redValue, greenValue, blueValue, 1.0f);
 
         // drawing triangle
-        // glBindVertexArray(VAO_ID);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(VAO_ID);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw only lines (borders)
         // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw and fill
