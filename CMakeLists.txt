@@ -15,6 +15,8 @@ INCLUDE_DIRECTORIES(external/GLM/)
 add_library(my_lib STATIC  
     ./external/STB_IMAGE/stb_image.cpp    
 
+    ./src/Wrappings/Shader/shader.cpp
+    ./src/Wrappings/ShaderProgram/shader_program.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET my_lib
