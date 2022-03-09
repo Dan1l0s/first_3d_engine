@@ -21,7 +21,7 @@ std::string Shader::ReadFile(const fs::path &path)
     if (!fin.is_open())
     {
         std::cout << "ERROR: Could not open " << path << std::endl;
-        return "sasi";
+        return "Error";
     }
     while (getline(fin, tmp))
     {

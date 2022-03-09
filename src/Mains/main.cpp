@@ -48,7 +48,6 @@ int main()
     program.AddShader(WORKING_DIR / "src" / "Shaders" / "fragment_shader.fs", GL_FRAGMENT_SHADER);
 
     texture1.Init(WORKING_DIR / "res" / "wall.jpg");
-
     texture2.Init(WORKING_DIR / "res" / "i.png");
 
     program.LinkProgram();
@@ -69,12 +68,6 @@ int main()
 
         program.SetInt("texture1", 0);
         program.SetInt("texture2", 1);
-
-        float timeValue = glfwGetTime();
-        float greenValue = (std::sin(timeValue) / 2.0f) + 0.5f;
-        float redValue = (std::sin(timeValue) / 3.0f) + 0.5f;
-        float blueValue = (std::sin(timeValue) / 4.0f) + 0.5f;
-
         glm::mat4 trans = glm::mat4(1.0f);
         trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
         trans = glm::rotate(trans, (GLfloat)glfwGetTime() * 1.0f, glm::vec3(0.0f, 0.0f, 1.0f));

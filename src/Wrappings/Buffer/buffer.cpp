@@ -16,12 +16,16 @@ void Buffer::Init(const std::vector<float> &vertices, const std::vector<uint> &i
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), &indices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    SetFloatAttribute(0, 3, GL_FALSE, 8, 0);
+    SetFloatAttribute(1, 3, GL_FALSE, 8, 3);
+    SetFloatAttribute(2, 2, GL_FALSE, 8, 6);
+}
+
+void Buffer::SetFloatAttribute(GLuint index, GLint size, GLboolean normalized, unsigned int stride, unsigned int offset)
+{
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_ID);
+    glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride * sizeof(float), (void *)(offset * sizeof(float)));
+    glEnableVertexAttribArray(index);
 }
 
 uint Buffer::GetVAOId()
