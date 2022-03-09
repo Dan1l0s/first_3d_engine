@@ -7,6 +7,10 @@
 #include <cmath>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 namespace fs = std::filesystem;
 
 const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
@@ -49,7 +53,8 @@ int main()
 
     program.LinkProgram();
 
-    // render loop
+    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    //  render loop
     while (!glfwWindowShouldClose(window))
     {
         // clear screen
@@ -70,7 +75,12 @@ int main()
         float redValue = (std::sin(timeValue) / 3.0f) + 0.5f;
         float blueValue = (std::sin(timeValue) / 4.0f) + 0.5f;
 
-        program.SetVec4f("ourColor", redValue, greenValue, blueValue, 1.0f);
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (GLfloat)glfwGetTime() * 1.0f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        GLint transformLoc = glGetUniformLocation(program.GetId(), "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         // drawing triangle
 
