@@ -13,12 +13,12 @@ void Buffer::Init(const std::vector<float> &vertices, const std::vector<uint> &i
     glBindVertexArray(VAO_ID);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_ID);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), &indices[0], GL_STATIC_DRAW);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO_ID);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), &indices[0], GL_STATIC_DRAW);
 
-    SetFloatAttribute(0, 3, GL_FALSE, 8, 0);
-    SetFloatAttribute(1, 3, GL_FALSE, 8, 3);
-    SetFloatAttribute(2, 2, GL_FALSE, 8, 6);
+    SetFloatAttribute(0, 3, GL_FALSE, 5, 0);
+    // SetFloatAttribute(1, 3, GL_FALSE, 8, 3);
+    SetFloatAttribute(1, 2, GL_FALSE, 5, 3);
 }
 
 void Buffer::SetFloatAttribute(GLuint index, GLint size, GLboolean normalized, unsigned int stride, unsigned int offset)
