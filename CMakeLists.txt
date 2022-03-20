@@ -20,6 +20,7 @@ add_library(my_lib STATIC
     ./src/Wrappings/ShaderProgram/shader_program.cpp
     ./src/Wrappings/Texture/texture.cpp
     ./src/Wrappings/Buffer/buffer.cpp
+    ./src/Wrappings/Camera/camera.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET my_lib

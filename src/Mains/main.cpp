@@ -3,6 +3,7 @@
 #include "../Wrappings/ShaderProgram/shader_program.h"
 #include "../Wrappings/Buffer/buffer.h"
 #include "../Wrappings/Texture/texture.h"
+#include "../Wrappings/Camera/camera.h"
 #include <windows.h>
 #include <cmath>
 #include <glad/glad.h>
@@ -15,13 +16,24 @@ namespace fs = std::filesystem;
 
 const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
 
+const float WINDOW_WIDTH = 800.0;
+const float WINDOW_HEIGHT = 600.0;
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void init_window();
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 Texture texture1;
 Texture texture2;
 Buffer buffer;
+Camera camera;
+
+float deltaTime = 0.0f; // Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
+float lastX = WINDOW_WIDTH / 2, lastY = WINDOW_HEIGHT / 2;
+bool first_mouse = true;
 
 GLFWwindow *window;
 
@@ -90,6 +102,7 @@ int main()
     program.LinkProgram();
 
     glEnable(GL_DEPTH_TEST);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
     //  render loop
@@ -109,23 +122,13 @@ int main()
         program.SetInt("texture2", 1);
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-        glm::mat4 projection = glm::mat4(1.0f);
-        projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
-
-        program.SetMat4fv("projection", projection);
-        program.SetMat4fv("view", view);
-
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-
         program.SetMat4fv("model", model);
 
+        program.SetMat4fv("projection", camera.getProjectionMatrix());
+        program.SetMat4fv("view", camera.getViewMatrix());
+
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw only lines (borders)
         // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // draw and fill
@@ -148,6 +151,36 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 // user input check
 void processInput(GLFWwindow *window)
 {
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+    float speed = 5 * deltaTime;
+
+    if (glfwGetKey(window, GLFW_KEY_W))
+    {
+        camera.MoveInLocal(glm::vec3(0.0f, 0.0f, 1.0f) * speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S))
+    {
+        camera.MoveInLocal(glm::vec3(0.0f, 0.0f, -1.0f) * speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D))
+    {
+        camera.MoveInLocal(glm::vec3(1.0f, 0.0f, 0.0f) * speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A))
+    {
+        camera.MoveInLocal(glm::vec3(-1.0f, 0.0f, 0.0f) * speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_C))
+    {
+        camera.MoveInLocal(glm::vec3(0.0f, -1.0f, 0.0f) * speed);
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE))
+    {
+        camera.MoveInLocal(glm::vec3(0.0f, 1.0f, 0.0f) * speed);
+    }
+
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
@@ -160,7 +193,7 @@ void init_window()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // create window (empty)
-    window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+    window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -168,6 +201,8 @@ void init_window()
         exit(-1);
     }
     glfwMakeContextCurrent(window);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // GLAD initialization
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -177,7 +212,34 @@ void init_window()
     }
 
     // resize draw area
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     // custom event on resize
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+}
+
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+{
+    camera.setFov(camera.getFov() - yoffset);
+}
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (first_mouse) // initially set to true
+    {
+        lastX = xpos;
+        lastY = ypos;
+        first_mouse = false;
+    }
+
+    float xoffset = lastX - xpos;
+    float yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    camera.RotateX(yoffset);
+    camera.RotateY(xoffset);
 }
