@@ -7,6 +7,7 @@ Camera::Camera()
     _cameraRight = glm::normalize(glm::cross(_direction, _worldUp));
     _cameraUp = glm::normalize(glm::cross(_cameraRight, _direction));
     _fov = 90;
+    _aspect = 4.0 / 3.0;
     updateViewMatrix();
     updateProjectionMatrix();
 }
@@ -84,7 +85,7 @@ void Camera::updateViewMatrix()
 void Camera::updateProjectionMatrix()
 {
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(_fov), 800.0f / 600.0f, 0.1f, 1000.0f);
+    projection = glm::perspective(glm::radians(_fov), _aspect, 0.1f, 1000.0f);
     _projectionMatrix = projection;
 }
 
@@ -121,4 +122,14 @@ void Camera::RotateX(float angle)
 void Camera::RotateY(float angle)
 {
     setDirection(glm::rotate(_direction, glm::radians(angle), _worldUp));
+}
+
+float Camera::getAspect()
+{
+    return _aspect;
+}
+
+void Camera::setAspect(float aspect)
+{
+    _aspect = aspect;
 }

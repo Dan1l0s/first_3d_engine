@@ -16,6 +16,7 @@ private:
     glm::mat4 _projectionMatrix;
     glm::mat4 _lookAtMatrix = glm::mat4(1.0f);
     float _fov;
+    float _aspect;
     glm::vec3 _cameraRight;
     glm::vec3 _cameraUp;
 
@@ -26,7 +27,9 @@ public:
     void setPosition(glm::vec3 pos);
     void setDirection(glm::vec3 direction);
     void setFov(float fov);
+    void setAspect(float aspect);
     float getFov();
+    float getAspect();
     glm::vec3 getPosition();
     glm::vec3 getDirection();
     void MoveInWorld(glm::vec3 delta);

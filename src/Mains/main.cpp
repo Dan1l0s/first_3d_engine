@@ -104,6 +104,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    int width, height;
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
     //  render loop
     while (!glfwWindowShouldClose(window))
@@ -120,6 +121,9 @@ int main()
 
         program.SetInt("texture1", 0);
         program.SetInt("texture2", 1);
+
+        glfwGetWindowSize(window, &width, &height);
+        camera.setAspect(double(width) / height);
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
