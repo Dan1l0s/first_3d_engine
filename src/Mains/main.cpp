@@ -16,8 +16,8 @@ namespace fs = std::filesystem;
 
 const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
 
-const float WINDOW_WIDTH = 800.0;
-const float WINDOW_HEIGHT = 600.0;
+const float WINDOW_WIDTH = 1600.0;
+const float WINDOW_HEIGHT = 1200.0;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -228,7 +228,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-    if (first_mouse) // initially set to true
+    if (first_mouse)
     {
         lastX = xpos;
         lastY = ypos;
@@ -240,7 +240,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    const float sensitivity = 0.1f;
+    const float sensitivity = 0.12f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
