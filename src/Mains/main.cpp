@@ -87,9 +87,9 @@ std::vector<unsigned int> indices = {
     0, 2, 3  // second triangle
 };
 
-glm::vec3 light_color(0.5f, 0.5f, 0.0f);
+glm::vec3 light_color(0.9f, 0.9f, 0.9f);
 // glm::vec3 object_color(1.0f, 1.0f, 1.2f);
-glm::vec3 object_color(0.3f, 0.7f, 0.2f);
+glm::vec3 object_color(0.6f, 0.2f, 0.6f);
 glm::vec3 light_pos(2.0f, 1.5f, 1.5f);
 
 int main()
@@ -129,8 +129,6 @@ int main()
         glfwGetWindowSize(window, &width, &height);
         camera.setAspect(double(width) / height);
 
-        light_color = glm::vec3((sin((float)glfwGetTime()) + 1) / 2, (cos((float)glfwGetTime()) + 1) / 2, 0.5f);
-
         glm::mat4 model_light = glm::mat4(1.0f);
         model_light = glm::translate(model_light, light_pos);
         model_light = glm::scale(model_light, glm::vec3(0.2f));
@@ -148,11 +146,29 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
-        light_pos = glm::vec3(sin((float)glfwGetTime()), 0.0f, cos((float)glfwGetTime())) * 2.0f;
-        program.SetVec3f("lightColor", light_color);
+        // light_pos = glm::vec3(sin((float)glfwGetTime()), 0.0f, cos((float)glfwGetTime())) * 2.0f;
+
+        program.SetVec3f("material.ambient", object_color);
+        program.SetVec3f("material.diffuse", object_color);
+        program.SetVec3f("material.specular", object_color);
+
+        // program.SetVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
+        // program.SetVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+        // program.SetVec3f("material.specular", 0.5f, 0.5f, 0.5f);
+        program.SetFloat("material.shininess", 64.0f);
+
+        // light_color = glm::vec3((sin((float)glfwGetTime()) + 1) / 2, (cos((float)glfwGetTime()) + 1) / 2, 0.5f);
+
+        glm::vec3 ambient = light_color * 0.3f;
+        glm::vec3 diffuse = light_color * 0.5f;
+        glm::vec3 specular = light_color * 0.7f;
+
+        program.SetVec3f("light.ambient", ambient);
+        program.SetVec3f("light.diffuse", diffuse); // darken diffuse light a bit
+        program.SetVec3f("light.position", light_pos);
+        program.SetVec3f("light.specular", specular);
+
         program.SetVec3f("viewPos", camera.getPosition());
-        program.SetVec3f("objectColor", object_color);
-        program.SetVec3f("lightPos", light_pos);
         program.SetMat4fv("model", model);
         program.SetMat4fv("projection", camera.getProjectionMatrix());
         program.SetMat4fv("view", camera.getViewMatrix());
