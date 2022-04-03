@@ -39,55 +39,56 @@ bool first_mouse = true;
 GLFWwindow *window;
 
 std::vector<float> vertices = {
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,
 
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,
 
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,
 
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,
 
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-    0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-    -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,
+    -0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f //
 };
+
 std::vector<unsigned int> indices = {
     0, 1, 2, // first triangle
     0, 2, 3  // second triangle
 };
 
 glm::vec3 light_color(0.5f, 0.5f, 0.0f);
+// glm::vec3 object_color(1.0f, 1.0f, 1.2f);
 glm::vec3 object_color(0.3f, 0.7f, 0.2f);
 glm::vec3 light_pos(2.0f, 1.5f, 1.5f);
 
@@ -128,13 +129,14 @@ int main()
         glfwGetWindowSize(window, &width, &height);
         camera.setAspect(double(width) / height);
 
-        light_color = glm::vec3(sin((float)glfwGetTime()), cos((float)glfwGetTime()), 0.5f);
+        light_color = glm::vec3((sin((float)glfwGetTime()) + 1) / 2, (cos((float)glfwGetTime()) + 1) / 2, 0.5f);
 
         glm::mat4 model_light = glm::mat4(1.0f);
         model_light = glm::translate(model_light, light_pos);
-        model_light = glm::scale(model_light, glm::vec3(0.01f));
+        model_light = glm::scale(model_light, glm::vec3(0.2f));
 
         light_program.Use();
+
         light_program.SetVec3f("lightColor", light_color);
         light_program.SetMat4fv("model", model_light);
         light_program.SetMat4fv("projection", camera.getProjectionMatrix());
@@ -144,11 +146,13 @@ int main()
 
         program.Use();
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+        // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
 
+        light_pos = glm::vec3(sin((float)glfwGetTime()), 0.0f, cos((float)glfwGetTime())) * 2.0f;
         program.SetVec3f("lightColor", light_color);
+        program.SetVec3f("viewPos", camera.getPosition());
         program.SetVec3f("objectColor", object_color);
-
+        program.SetVec3f("lightPos", light_pos);
         program.SetMat4fv("model", model);
         program.SetMat4fv("projection", camera.getProjectionMatrix());
         program.SetMat4fv("view", camera.getViewMatrix());
@@ -181,6 +185,30 @@ void processInput(GLFWwindow *window)
     lastFrame = currentFrame;
     float speed = 5 * deltaTime;
 
+    if (glfwGetKey(window, GLFW_KEY_UP))
+    {
+        light_pos += glm::vec3(0.0f, 1.0f, 0.0f) * speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN))
+    {
+        light_pos += glm::vec3(0.0f, -1.0f, 0.0f) * speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT))
+    {
+        light_pos += glm::vec3(-1.0f, 0.0f, 0.0f) * speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT))
+    {
+        light_pos += glm::vec3(1.0f, 0.0f, 0.0f) * speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
+    {
+        light_pos += glm::vec3(0.0f, 0.0f, 1.0f) * speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
+    {
+        light_pos += glm::vec3(0.0f, 0.0f, -1.0f) * speed;
+    }
     if (glfwGetKey(window, GLFW_KEY_W))
     {
         camera.MoveInLocal(glm::vec3(0.0f, 0.0f, 1.0f) * speed);
