@@ -21,7 +21,7 @@ void Camera::MoveInWorld(glm::vec3 delta)
 void Camera::MoveInLocal(glm::vec3 delta)
 {
     _position += _cameraRight * delta.x;
-    _position += _worldUp * delta.y;
+    _position += _cameraUp * delta.y;
     _position += _direction * delta.z;
     updateViewMatrix();
 }

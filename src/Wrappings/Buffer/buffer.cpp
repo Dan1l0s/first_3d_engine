@@ -40,3 +40,8 @@ uint Buffer::GetEBOId()
 {
     return EBO_ID;
 }
+
+void Buffer::Use()
+{
+    glBindVertexArray(VAO_ID);
+}

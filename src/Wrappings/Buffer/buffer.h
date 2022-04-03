@@ -17,4 +17,5 @@ public:
     uint GetVAOId();
     uint GetVBOId();
     uint GetEBOId();
+    void Use();
 };

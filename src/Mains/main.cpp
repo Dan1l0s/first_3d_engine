@@ -27,7 +27,8 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 
 Texture texture1;
 Texture texture2;
-Buffer buffer;
+Buffer cube;
+Buffer light_cube;
 Camera camera;
 
 float deltaTime = 0.0f; // Time between current frame and last frame
@@ -86,10 +87,20 @@ std::vector<unsigned int> indices = {
     0, 2, 3  // second triangle
 };
 
+glm::vec3 light_color(0.5f, 0.5f, 0.0f);
+glm::vec3 object_color(0.3f, 0.7f, 0.2f);
+glm::vec3 light_pos(2.0f, 1.5f, 1.5f);
+
 int main()
 {
     init_window();
-    buffer.Init(vertices, indices);
+    cube.Init(vertices, indices);
+    light_cube.Init(vertices, indices);
+
+    ShaderProgram light_program;
+    light_program.InitProgram();
+    light_program.AddShader(WORKING_DIR / "src" / "Shaders" / "light_fragment_shader.fs", GL_FRAGMENT_SHADER);
+    light_program.AddShader(WORKING_DIR / "src" / "Shaders" / "vertex_shader.vs", GL_VERTEX_SHADER);
 
     ShaderProgram program;
     program.InitProgram();
@@ -100,6 +111,7 @@ int main()
     texture2.Init(WORKING_DIR / "res" / "i.png");
 
     program.LinkProgram();
+    light_program.LinkProgram();
 
     glEnable(GL_DEPTH_TEST);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -113,25 +125,34 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
-
-        program.Use();
-
-        texture1.BindToUnit(0);
-        texture2.BindToUnit(1);
-
-        program.SetInt("texture1", 0);
-        program.SetInt("texture2", 1);
-
         glfwGetWindowSize(window, &width, &height);
         camera.setAspect(double(width) / height);
 
+        light_color = glm::vec3(sin((float)glfwGetTime()), cos((float)glfwGetTime()), 0.5f);
+
+        glm::mat4 model_light = glm::mat4(1.0f);
+        model_light = glm::translate(model_light, light_pos);
+        model_light = glm::scale(model_light, glm::vec3(0.01f));
+
+        light_program.Use();
+        light_program.SetVec3f("lightColor", light_color);
+        light_program.SetMat4fv("model", model_light);
+        light_program.SetMat4fv("projection", camera.getProjectionMatrix());
+        light_program.SetMat4fv("view", camera.getViewMatrix());
+        light_cube.Use();
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        program.Use();
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        program.SetMat4fv("model", model);
 
+        program.SetVec3f("lightColor", light_color);
+        program.SetVec3f("objectColor", object_color);
+
+        program.SetMat4fv("model", model);
         program.SetMat4fv("projection", camera.getProjectionMatrix());
         program.SetMat4fv("view", camera.getViewMatrix());
-
+        cube.Use();
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // draw only lines (borders)
@@ -178,11 +199,11 @@ void processInput(GLFWwindow *window)
     }
     if (glfwGetKey(window, GLFW_KEY_C))
     {
-        camera.MoveInLocal(glm::vec3(0.0f, -1.0f, 0.0f) * speed);
+        camera.MoveInWorld(glm::vec3(0.0f, -1.0f, 0.0f) * speed);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE))
     {
-        camera.MoveInLocal(glm::vec3(0.0f, 1.0f, 0.0f) * speed);
+        camera.MoveInWorld(glm::vec3(0.0f, 1.0f, 0.0f) * speed);
     }
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
