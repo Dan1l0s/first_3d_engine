@@ -16,14 +16,15 @@ namespace fs = std::filesystem;
 
 const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
 
-const float WINDOW_WIDTH = 1600.0;
-const float WINDOW_HEIGHT = 1200.0;
+float WINDOW_WIDTH = 1920.0;
+float WINDOW_HEIGHT = 1080.0;
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 void init_window();
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void GetScreenSize();
 
 Texture texture1;
 Texture texture2;
@@ -127,7 +128,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         processInput(window);
         glfwGetWindowSize(window, &width, &height);
-        camera.setAspect(double(width) / height);
+        camera.setAspect(double(width) / double(height));
 
         glm::mat4 model_light = glm::mat4(1.0f);
         model_light = glm::translate(model_light, light_pos);
@@ -217,11 +218,11 @@ void processInput(GLFWwindow *window)
     {
         light_pos += glm::vec3(1.0f, 0.0f, 0.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
     {
         light_pos += glm::vec3(0.0f, 0.0f, 1.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
     {
         light_pos += glm::vec3(0.0f, 0.0f, -1.0f) * speed;
     }
@@ -261,8 +262,10 @@ void init_window()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    GetScreenSize();
     // create window (empty)
     window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
+    glfwSetWindowPos(window, 0, 25);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -311,4 +314,11 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 
     camera.RotateX(yoffset);
     camera.RotateY(xoffset);
+}
+
+void GetScreenSize()
+{
+    const GLFWvidmode *mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    WINDOW_WIDTH = mode->width;
+    WINDOW_HEIGHT = mode->height;
 }

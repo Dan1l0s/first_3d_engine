@@ -7,7 +7,7 @@ Camera::Camera()
     _cameraRight = glm::normalize(glm::cross(_direction, _worldUp));
     _cameraUp = glm::normalize(glm::cross(_cameraRight, _direction));
     _fov = 90;
-    _aspect = 4.0 / 3.0;
+    _aspect = 16.0 / 9.0;
     updateViewMatrix();
     updateProjectionMatrix();
 }
