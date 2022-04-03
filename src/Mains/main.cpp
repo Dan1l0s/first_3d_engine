@@ -164,20 +164,24 @@ int main()
         glm::vec3 diffuse = light_color * 0.5f;
         glm::vec3 specular = light_color * 0.7f;
 
-        program.SetVec3f("light.position", camera.getPosition());
-        program.SetVec3f("light.direction", camera.getDirection());
-        program.SetFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
-        program.SetFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+        program.SetVec3f("spotLight.position", camera.getPosition());
+        program.SetVec3f("spotLight.direction", camera.getDirection());
+        program.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        program.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(17.5f)));
+        program.SetVec3f("spotLight.clq", glm::vec3(1.0f, 0.09f, 0.032f));
+        program.SetVec3f("spotLight.ambient", ambient);
+        program.SetVec3f("spotLight.diffuse", diffuse);
+        program.SetVec3f("spotLight.specular", specular);
 
-        program.SetFloat("light.constant", 1.0f);
-        program.SetFloat("light.linear", 0.09f);
-        program.SetFloat("light.quadratic", 0.032f);
+        ambient = light_color * 0.3f;
+        diffuse = light_color * 0.8f;
+        specular = light_color * 0.4f;
 
-        program.SetVec3f("light.ambient", ambient);
-        program.SetVec3f("light.diffuse", diffuse); // darken diffuse light a bit
-        // program.SetVec3f("light.direction", -0.2f, -1.0f, -0.3f);
-        program.SetVec3f("light.specular", specular);
-        // program.SetVec3f("light.position", light_pos);
+        program.SetVec3f("pointLight.clq", glm::vec3(1.0f, 0.09f, 0.032f));
+        program.SetVec3f("pointLight.position", light_pos);
+        program.SetVec3f("pointLight.ambient", ambient);
+        program.SetVec3f("pointLight.diffuse", diffuse);
+        program.SetVec3f("pointLight.specular", specular);
 
         program.SetVec3f("viewPos", camera.getPosition());
         program.SetMat4fv("model", model);
@@ -209,7 +213,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void processInput(GLFWwindow *window)
 {
     const float sensitivity = 0.12f;
-    static bool cursormode, flashlight_mode;
+    static bool cursormode, flashlight_mode, point_mode;
     manager.ReadFrame();
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
@@ -263,12 +267,25 @@ void processInput(GLFWwindow *window)
         if (flashlight_mode)
         {
             flashlight_mode = false;
-            program.SetBool("on", 0);
+            program.SetInt("flash_mode", 0);
         }
         else
         {
             flashlight_mode = true;
-            program.SetBool("on", 1);
+            program.SetInt("flash_mode", 1);
+        }
+    }
+    if (manager.KeyPressed(GLFW_KEY_L))
+    {
+        if (point_mode)
+        {
+            point_mode = false;
+            program.SetInt("point_mode", 0);
+        }
+        else
+        {
+            point_mode = true;
+            program.SetInt("point_mode", 1);
         }
     }
     if (manager.KeyDown(GLFW_KEY_W))
