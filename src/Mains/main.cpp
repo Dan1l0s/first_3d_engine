@@ -156,9 +156,6 @@ int main()
         program.SetInt("material.specular", 2);
         program.SetInt("material.diffuse", 1);
 
-        // program.SetVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
-        // program.SetVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
-        // program.SetVec3f("material.specular", 0.5f, 0.5f, 0.5f);
         program.SetFloat("material.shininess", 64.0f);
 
         // light_color = glm::vec3((sin((float)glfwGetTime()) + 1) / 2, (cos((float)glfwGetTime()) + 1) / 2, 0.5f);
@@ -167,10 +164,15 @@ int main()
         glm::vec3 diffuse = light_color * 0.5f;
         glm::vec3 specular = light_color * 0.7f;
 
+        program.SetFloat("light.constant", 1.0f);
+        program.SetFloat("light.linear", 0.09f);
+        program.SetFloat("light.quadratic", 0.032f);
+
         program.SetVec3f("light.ambient", ambient);
         program.SetVec3f("light.diffuse", diffuse); // darken diffuse light a bit
-        program.SetVec3f("light.position", light_pos);
+        program.SetVec3f("light.direction", -0.2f, -1.0f, -0.3f);
         program.SetVec3f("light.specular", specular);
+        program.SetVec3f("light.position", light_pos);
 
         program.SetVec3f("viewPos", camera.getPosition());
         program.SetMat4fv("model", model);
