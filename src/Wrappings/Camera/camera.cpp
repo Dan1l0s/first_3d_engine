@@ -106,6 +106,7 @@ glm::vec3 Camera::getDirection()
 
 void Camera::RotateX(float angle)
 {
+    angle *= -1;
     float pitch = 90.0f - glm::angle(_direction, _worldUp) * 180 / 3.14159265358979323846;
     float new_pitch = pitch + angle;
     if (new_pitch > 89.0f)
@@ -121,6 +122,7 @@ void Camera::RotateX(float angle)
 
 void Camera::RotateY(float angle)
 {
+    angle *= -1;
     setDirection(glm::rotate(_direction, glm::radians(angle), _worldUp));
 }
 

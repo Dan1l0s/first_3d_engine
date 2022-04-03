@@ -56,6 +56,11 @@ void ShaderProgram::SetVec4f(const std::string &uniform_name, float x, float y, 
     Use();
     glUniform4f(PosOf(uniform_name), x, y, z, w);
 }
+void ShaderProgram::SetBool(const std::string &uniform_name, int value)
+{
+    Use();
+    glUniform1i(PosOf(uniform_name), value);
+}
 void ShaderProgram::SetVec4f(const std::string &uniform_name, glm::vec4 value)
 {
     Use();

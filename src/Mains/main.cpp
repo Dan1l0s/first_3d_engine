@@ -26,18 +26,20 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void GetScreenSize();
 
+InputManager manager;
 Texture texture1;
 Texture texture2;
 Buffer cube;
 Buffer light_cube;
 Camera camera;
+GLFWwindow *window;
+ShaderProgram program;
+ShaderProgram light_program;
 
 float deltaTime = 0.0f; // Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 float lastX = WINDOW_WIDTH / 2, lastY = WINDOW_HEIGHT / 2;
 bool first_mouse = true;
-
-GLFWwindow *window;
 
 std::vector<float> vertices = {
     // positions          // normals           // texture coords
@@ -96,16 +98,15 @@ glm::vec3 light_pos(2.0f, 1.5f, 1.5f);
 
 int main()
 {
+
     init_window();
     cube.Init(vertices, indices);
     light_cube.Init(vertices, indices);
 
-    ShaderProgram light_program;
     light_program.InitProgram();
     light_program.AddShader(WORKING_DIR / "src" / "Shaders" / "light_fragment_shader.fs", GL_FRAGMENT_SHADER);
     light_program.AddShader(WORKING_DIR / "src" / "Shaders" / "vertex_shader.vs", GL_VERTEX_SHADER);
 
-    ShaderProgram program;
     program.InitProgram();
     program.AddShader(WORKING_DIR / "src" / "Shaders" / "vertex_shader.vs", GL_VERTEX_SHADER);
     program.AddShader(WORKING_DIR / "src" / "Shaders" / "fragment_shader.fs", GL_FRAGMENT_SHADER);
@@ -120,7 +121,6 @@ int main()
     light_program.LinkProgram();
 
     glEnable(GL_DEPTH_TEST);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     int width, height;
     glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
@@ -208,62 +208,97 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 // user input check
 void processInput(GLFWwindow *window)
 {
+    const float sensitivity = 0.12f;
+    static bool cursormode, flashlight_mode;
+    manager.ReadFrame();
     float currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     lastFrame = currentFrame;
     float speed = 5 * deltaTime;
 
-    if (glfwGetKey(window, GLFW_KEY_UP))
+    if (manager.KeyPressed(GLFW_KEY_TAB))
+    {
+        if (cursormode)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            cursormode = false;
+        }
+        else
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            cursormode = true;
+            // glfwSetCursorPos(window, WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+        }
+    }
+    if (cursormode)
+        return;
+    camera.RotateY(manager.CursorXOffset() * sensitivity);
+    camera.RotateX(manager.CursorYOffset() * sensitivity / 16 * 9);
+    if (manager.KeyDown(GLFW_KEY_UP))
     {
         light_pos += glm::vec3(0.0f, 1.0f, 0.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_DOWN))
+    if (manager.KeyDown(GLFW_KEY_DOWN))
     {
         light_pos += glm::vec3(0.0f, -1.0f, 0.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT))
+    if (manager.KeyDown(GLFW_KEY_LEFT))
     {
         light_pos += glm::vec3(-1.0f, 0.0f, 0.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT))
+    if (manager.KeyDown(GLFW_KEY_RIGHT))
     {
         light_pos += glm::vec3(1.0f, 0.0f, 0.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL))
+    if (manager.KeyDown(GLFW_KEY_LEFT_CONTROL))
     {
         light_pos += glm::vec3(0.0f, 0.0f, 1.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT))
+    if (manager.KeyDown(GLFW_KEY_LEFT_SHIFT))
     {
         light_pos += glm::vec3(0.0f, 0.0f, -1.0f) * speed;
     }
-    if (glfwGetKey(window, GLFW_KEY_W))
+    if (manager.KeyPressed(GLFW_KEY_F))
+    {
+        if (flashlight_mode)
+        {
+            flashlight_mode = false;
+            program.SetBool("on", 0);
+        }
+        else
+        {
+            flashlight_mode = true;
+            program.SetBool("on", 1);
+        }
+    }
+    if (manager.KeyDown(GLFW_KEY_W))
     {
         camera.MoveInLocal(glm::vec3(0.0f, 0.0f, 1.0f) * speed);
     }
-    if (glfwGetKey(window, GLFW_KEY_S))
+    if (manager.KeyDown(GLFW_KEY_S))
     {
         camera.MoveInLocal(glm::vec3(0.0f, 0.0f, -1.0f) * speed);
     }
-    if (glfwGetKey(window, GLFW_KEY_D))
+    if (manager.KeyDown(GLFW_KEY_D))
     {
         camera.MoveInLocal(glm::vec3(1.0f, 0.0f, 0.0f) * speed);
     }
-    if (glfwGetKey(window, GLFW_KEY_A))
+    if (manager.KeyDown(GLFW_KEY_A))
     {
         camera.MoveInLocal(glm::vec3(-1.0f, 0.0f, 0.0f) * speed);
     }
-    if (glfwGetKey(window, GLFW_KEY_C))
+    if (manager.KeyDown(GLFW_KEY_C))
     {
         camera.MoveInWorld(glm::vec3(0.0f, -1.0f, 0.0f) * speed);
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE))
+    if (manager.KeyDown(GLFW_KEY_SPACE))
     {
         camera.MoveInWorld(glm::vec3(0.0f, 1.0f, 0.0f) * speed);
     }
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (manager.KeyPressed(GLFW_KEY_ESCAPE))
+    {
         glfwSetWindowShouldClose(window, true);
+    }
 }
 
 void init_window()
@@ -284,8 +319,8 @@ void init_window()
         exit(-1);
     }
     glfwMakeContextCurrent(window);
-    glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // GLAD initialization
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -298,33 +333,12 @@ void init_window()
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     // custom event on resize
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    manager.SetWindow(window);
 }
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
     camera.setFov(camera.getFov() - yoffset);
-}
-
-void mouse_callback(GLFWwindow *window, double xpos, double ypos)
-{
-    if (first_mouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        first_mouse = false;
-    }
-
-    float xoffset = lastX - xpos;
-    float yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
-
-    const float sensitivity = 0.12f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    camera.RotateX(yoffset);
-    camera.RotateY(xoffset);
 }
 
 void GetScreenSize()

@@ -26,6 +26,7 @@ out vec4 FragColor;
 
 uniform Light light;  
 uniform Material material;
+uniform int on; 
 
 uniform vec3 viewPos;
 
@@ -63,5 +64,5 @@ void main()
 
 
    vec3 result = ambient + diffuse + specular;
-   FragColor = vec4(result, 1.0);
+   FragColor = (on == 0 ? vec4(ambient, 1.0) : vec4(result, 1.0));
 }
