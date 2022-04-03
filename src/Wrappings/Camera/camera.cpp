@@ -6,8 +6,8 @@ Camera::Camera()
     _position = glm::vec3(0.0f, 0.0f, 0.0f);
     _cameraRight = glm::normalize(glm::cross(_direction, _worldUp));
     _cameraUp = glm::normalize(glm::cross(_cameraRight, _direction));
-    _fov = 90;
-    _aspect = 16.0 / 9.0;
+    _fov = DEFAULT_CAMERA_FOV;
+    _aspect = DEFAULT_CAMERA_ASPECT;
     updateViewMatrix();
     updateProjectionMatrix();
 }

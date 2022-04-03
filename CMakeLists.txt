@@ -21,6 +21,7 @@ add_library(my_lib STATIC
     ./src/Wrappings/Texture/texture.cpp
     ./src/Wrappings/Buffer/buffer.cpp
     ./src/Wrappings/Camera/camera.cpp
+    ./src/Wrappings/InputManager/input_manager.cpp
 )
 
 ADD_CUSTOM_COMMAND(TARGET my_lib

@@ -4,6 +4,8 @@
 #include "../Wrappings/Buffer/buffer.h"
 #include "../Wrappings/Texture/texture.h"
 #include "../Wrappings/Camera/camera.h"
+#include "../Wrappings/InputManager/input_manager.h"
+#include "../Wrappings/Config/config.h"
 #include <windows.h>
 #include <cmath>
 #include <glad/glad.h>
@@ -13,8 +15,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace fs = std::filesystem;
-
-const fs::path WORKING_DIR = fs::canonical(fs::current_path() / "..");
 
 float WINDOW_WIDTH = 1920.0;
 float WINDOW_HEIGHT = 1080.0;
@@ -164,15 +164,20 @@ int main()
         glm::vec3 diffuse = light_color * 0.5f;
         glm::vec3 specular = light_color * 0.7f;
 
+        program.SetVec3f("light.position", camera.getPosition());
+        program.SetVec3f("light.direction", camera.getDirection());
+        program.SetFloat("light.cutOff", glm::cos(glm::radians(12.5f)));
+        program.SetFloat("light.outerCutOff", glm::cos(glm::radians(17.5f)));
+
         program.SetFloat("light.constant", 1.0f);
         program.SetFloat("light.linear", 0.09f);
         program.SetFloat("light.quadratic", 0.032f);
 
         program.SetVec3f("light.ambient", ambient);
         program.SetVec3f("light.diffuse", diffuse); // darken diffuse light a bit
-        program.SetVec3f("light.direction", -0.2f, -1.0f, -0.3f);
+        // program.SetVec3f("light.direction", -0.2f, -1.0f, -0.3f);
         program.SetVec3f("light.specular", specular);
-        program.SetVec3f("light.position", light_pos);
+        // program.SetVec3f("light.position", light_pos);
 
         program.SetVec3f("viewPos", camera.getPosition());
         program.SetMat4fv("model", model);
